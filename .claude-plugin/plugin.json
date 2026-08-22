@@ -1,0 +1,9 @@
+{
+  "name": "veille",
+  "version": "1.0.0",
+  "description": "Tape /veille et recois un condense court des dernieres fuites de donnees, leaks et incidents securite. /veille <tag> pour filtrer.",
+  "author": { "name": "Jay", "url": "https://github.com/Coyottejay" },
+  "homepage": "https://github.com/Coyottejay/veille",
+  "repository": "https://github.com/Coyottejay/veille",
+  "license": "MIT"
+}
