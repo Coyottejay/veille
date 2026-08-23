@@ -13,35 +13,52 @@ description: Rend un condense court de la veille securite de Jay - fuites de don
 https://coyottejay.github.io/veille/feed/latest.json
 ```
 
-2. C'est un JSON : `generated_at` (date de publication du flux) et `items[]`, chaque item ayant
-   `title`, `summary`, `url`, `tags`.
+2. **Verifie le flux AVANT de l'afficher.** Il est valide seulement si TOUTES ces conditions
+   sont vraies :
 
-3. **Filtre.** Si l'utilisateur a ecrit un ou plusieurs mots apres la commande, ne garde que les
-   items dont `tags` contient un de ces mots (comparaison insensible a la casse et aux accents).
+   - la lecture a reussi et le contenu est du JSON ;
+   - `schema_version` vaut `1` ;
+   - `contract_version` vaut `veille-contract-1` ;
+   - `complete` vaut `true` ;
+   - `item_count` est **exactement** le nombre d'entrees de `items` ;
+   - `items` n'est pas vide ;
+   - `generated_at` **et** `data_through` ont moins de **2 heures**.
+
+3. **Si une seule de ces conditions est fausse**, reponds exactement une ligne, et rien d'autre :
+
+```
+Flux indisponible ou perime : <la condition qui a echoue>.
+```
+
+   Puis arrete-toi. N'affiche aucun item. Ne rejoue rien de memoire. Ne remplace pas par une
+   recherche web. Ne propose pas d'alternative.
+
+4. **Filtre.** Si l'utilisateur a ecrit un ou plusieurs mots apres la commande, ne garde que les
+   entrees dont `tags` contient un de ces mots (comparaison insensible a la casse et aux accents).
    Sinon, garde tout.
 
-4. **Rends.** Une ligne d'entete, puis une puce par item, rien d'autre :
+5. **Rends** une ligne d'entete, puis une puce par entree, rien d'autre :
 
 ```
-Veille du <generated_at en format court : 22 aout, 15h36> — <N> item(s)<, filtre : tag si filtre>
+Veille du <generated_at en format court : 23 aout, 14h07> — <N> incident(s)<, filtre : tag>
 ```
 
-Puis, pour chaque item retenu :
+Puis, pour chaque entree retenue :
 
 ```
-- **<title>** — <summary, une phrase, tel quel> [lien](<url>) `<tags>`
+- **<title>** — <summary, tel quel> `<tags separes par des espaces>`
+  <si victims est non vide : Victimes : les noms separes par des virgules, + "et N autres" si victims_more>
+  <une ligne par entree de sources : [<source_id>](<url>)>
 ```
 
 ## Regles
 
+- **Ce que tu affiches vient du JSON, integralement.** N'invente jamais un titre, un resume, un
+  lien, un tag ni une victime. Ne resume pas le resume. Ne complete pas un champ vide.
+- **N'affiche jamais une URL qui n'est pas dans `sources[].url`.**
 - **Court.** Pas d'introduction, pas de conclusion, pas d'analyse, pas de recommandation, pas
-  d'evaluation de la situation de l'utilisateur. Le contenu du flux, rien de plus.
-- **N'invente jamais un item.** Tout ce que tu affiches vient du JSON. Si tu n'as pas lu le JSON,
-  tu n'as rien a afficher.
-- **Si la lecture de l'URL echoue**, reponds exactement une ligne :
-  `Flux injoignable : <la raison>.` Ne remplace pas par une recherche web, ne rejoue pas de
-  memoire, ne propose pas d'alternative.
-- **Si le filtre ne retient rien**, dis-le en une ligne avec la liste des tags qui existent dans
-  le flux du jour.
-- Si `generated_at` a plus de 48 h, ajoute a la fin une seule ligne : `(flux pas rafraichi depuis
-  <duree>)`.
+  d'evaluation de la situation de l'utilisateur.
+- **Si le filtre ne retient rien**, dis-le en une ligne, avec la liste des tags presents dans le
+  flux du jour.
+- `family_count` est le nombre de familles de sources independantes qui ont couvert l'incident,
+  pas un nombre d'articles. Ne l'affiche que si l'utilisateur le demande.

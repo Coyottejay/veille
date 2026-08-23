@@ -11,8 +11,11 @@
     {
       "name": "veille",
       "description": "Tape /veille et recois un condense court des dernieres fuites de donnees, leaks et incidents securite. /veille <tag> pour filtrer.",
-      "version": "1.0.0",
-      "author": { "name": "Jay", "url": "https://github.com/Coyottejay" },
+      "version": "2.0.0",
+      "author": {
+        "name": "Jay",
+        "url": "https://github.com/Coyottejay"
+      },
       "source": "./",
       "category": "productivity",
       "homepage": "https://github.com/Coyottejay/veille"
